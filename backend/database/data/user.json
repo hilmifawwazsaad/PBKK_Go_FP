@@ -1,0 +1,13 @@
+[
+    {
+        "id": 1,
+        "nama": "John Doe",
+        "jenis_kelamin": true,
+        "nomor_telepon": "081234567890",
+        "email": "johndoe@example.com",
+        "alamat": "Jl. Raya No. 1, Jakarta",
+        "user_type": "admin",
+        "password": "hashedpassword123",
+        "transaction": []
+    }
+]
