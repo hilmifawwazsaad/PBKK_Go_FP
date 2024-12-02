@@ -1,0 +1,9 @@
+[
+    {
+        "id": 1,
+        "user_id": 2,
+        "book_id": 1,
+        "tanggal_pinjam": "2024-12-02T00:00:00Z",
+        "tanggal_kembali": "2024-12-16T00:00:00Z"
+    }
+]

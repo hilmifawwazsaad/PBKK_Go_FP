@@ -1,13 +1,24 @@
 [
     {
         "id": 1,
-        "nama": "John Doe",
+        "nama": "Hilmi Fawwaz",
         "jenis_kelamin": true,
-        "nomor_telepon": "081234567890",
-        "email": "johndoe@example.com",
+        "nomor_telepon": "0895367056545",
+        "email": "hilmifawwaz@example.com",
         "alamat": "Jl. Raya No. 1, Jakarta",
         "user_type": "admin",
         "password": "hashedpassword123",
+        "transaction": []
+    },
+    {
+        "id": 2,
+        "nama": "Amanda Illona",
+        "jenis_kelamin": false,
+        "nomor_telepon": "081216686381",
+        "email": "amandaillon@example.com",
+        "alamat": "Jl. Raya No. 13, Kediri, Jawa Timur",
+        "user_type": "user",
+        "password": "hashedpassword456",
         "transaction": []
     }
 ]

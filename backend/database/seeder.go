@@ -1,48 +1,68 @@
 package database
 
 import (
+	"backend/models"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
-	"backend/models"
 
 	"gorm.io/gorm"
-
 )
 
-func UserSeeder(db *gorm.DB) error {
-	// Membuka file user.json untuk membaca data
-	file, err := os.Open("database/data/user.json")
+func Seeder(db *gorm.DB) error {
+
+	if err := seedDataFromFile(db, "database/data/user.json", &[]models.User{}, "users"); err != nil {
+		return fmt.Errorf("error seeding users: %v", err)
+	}
+
+	if err := seedDataFromFile(db, "database/data/category.json", &[]models.Category{}, "categories"); err != nil {
+		return fmt.Errorf("error seeding categories: %v", err)
+	}
+
+	if err := seedDataFromFile(db, "database/data/book.json", &[]models.Book{}, "books"); err != nil {
+		return fmt.Errorf("error seeding books: %v", err)
+	}
+
+	if err := seedDataFromFile(db, "database/data/transaction.json", &[]models.Transaction{}, "transactions"); err != nil {
+		return fmt.Errorf("error seeding transactions: %v", err)
+	}
+
+	log.Println("Seeding completed successfully.")
+	return nil
+}
+
+func seedDataFromFile(db *gorm.DB, filePath string, model interface{}, tableName string) error {
+	// Optionally, delete existing records in the table
+	// if err := db.Exec(fmt.Sprintf("DELETE FROM %s", tableName)).Error; err != nil {
+	// 	return fmt.Errorf("error deleting from table %s: %v", tableName, err)
+	// }
+
+	file, err := os.Open(filePath)
 	if err != nil {
-		log.Printf("Error opening user file: %v", err)
+		log.Printf("Error opening file %s: %v", filePath, err)
 		return err
 	}
 	defer file.Close()
 
-	// Membaca isi file
 	data, err := ioutil.ReadAll(file)
 	if err != nil {
-		log.Printf("Error reading user file: %v", err)
+		log.Printf("Error reading file %s: %v", filePath, err)
 		return err
 	}
 
-	// Mengunmarshal data JSON menjadi slice struct User
-	var users []models.User
-	err = json.Unmarshal(data, &users)
+	err = json.Unmarshal(data, &model)
 	if err != nil {
-		log.Printf("Error unmarshalling user data: %v", err)
+		log.Printf("Error unmarshalling data from file %s: %v", filePath, err)
 		return err
 	}
 
-	// Menyimpan setiap user ke database
-	for _, user := range users {
-		if err := db.Create(&user).Error; err != nil {
-			log.Printf("Error seeding user: %v", err)
-			return err
-		}
+	if err := db.CreateInBatches(model, 100).Error; err != nil {
+		log.Printf("Error inserting data into table %s: %v", tableName, err)
+		return err
 	}
 
-	log.Println("User seeding completed.")
+	log.Printf("%s seeding completed.", tableName)
 	return nil
 }

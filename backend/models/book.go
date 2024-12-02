@@ -2,7 +2,7 @@ package models
 
 type Book struct {
 	ID            uint          `gorm:"primaryKey" json:"id"`
-	CategoryID    uint          `gorm:"not null" json:"category_id"`
+	CategoryID    uint          `gorm:"not null;constraint:OnDelete:RESTRICT;OnUpdate:CASCADE;" json:"category_id"`
 	Judul         string        `gorm:"not null" json:"judul"`
 	Penulis       string        `gorm:"type:varchar(255);not null" json:"penulis"`
 	TahunTerbit   int           `gorm:"type:integer;not null" json:"tahun_terbit"`

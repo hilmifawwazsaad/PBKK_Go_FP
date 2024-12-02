@@ -1,0 +1,24 @@
+[
+    {
+        "id": 1,
+        "category_id": 1,
+        "judul": "Go Programming for Beginners",
+        "penulis": "Lathifah Sahda",
+        "tahun_terbit": 2020,
+        "jumlah_halaman": 300,
+        "bahasa_buku": "Indonesia",
+        "stok": 10,
+        "transaction": []
+    },
+    {
+        "id": 2,
+        "category_id": 1,
+        "judul": "Advanced Go Programming",
+        "penulis": "Aria Nalini",
+        "tahun_terbit": 2021,
+        "jumlah_halaman": 250,
+        "bahasa_buku": "Indonesia",
+        "stok": 5,
+        "transaction": []
+    }
+]

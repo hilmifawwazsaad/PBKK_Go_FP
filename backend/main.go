@@ -2,15 +2,15 @@ package main
 
 import (
 	"backend/config"
-	"backend/routes"
-	// "backend/database"
-	"backend/controllers"
+	// "fmt"
+	// "backend/routes"
+	"backend/database"
+	// "backend/controllers"
 	// "backend/models"
 	// "fmt"
-	// "log"
+	"log"
 	"os"
 
-	// "backend/routes"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	// "gorm.io/gorm"
@@ -26,10 +26,20 @@ func main() {
 
 	server := gin.Default()
 
-	routes.UserRoutes(server, UserController)
-	routes.BookRoutes(server, BookController)
-	routes.CategoryRoutes(server, CategoryController)
-	routes.TransactionRoutes(server, TransactionController)
+	// routes.UserRoutes(server, UserController)
+	// routes.BookRoutes(server, bookController)
+	// routes.CategoryRoutes(server, categoryController)
+	// routes.TransactionRoutes(server, transactionController)
+
+	if err := database.Migrate(db); err != nil {
+		log.Fatalf("Error migrating database: %v", err)
+		panic(err)
+	}
+
+	if err := database.Seeder(db); err != nil {
+		log.Fatalf("Error seeding data: %v", err)
+		panic(err)
+	}
 
 	port := os.Getenv("PORT")
 	if port == "" {
