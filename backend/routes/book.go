@@ -6,13 +6,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func BookRoutes(router *gin.Engine, BookController *controllers.BookController) {
+func BookRoutes(router *gin.Engine, bookController *controllers.BookController) {
 	bookRoutes := router.Group("/books")
 	{
-		bookRoutes.GET("/books", BookController.GetAllBooks)
-		bookRoutes.GET("/books/:id", BookController.GetBookByID)
-		bookRoutes.POST("/books", BookController.AddBook)
-		bookRoutes.PUT("/books/:id", BookController.UpdateBook)
-		bookRoutes.DELETE("/books/:id", BookController.DeleteBook)
+		bookRoutes.GET("/", bookController.GetAllBooks)      // Mengambil semua buku
+		bookRoutes.GET("/:id", bookController.GetBookByID)   // Mengambil buku berdasarkan ID
+		bookRoutes.POST("/", bookController.AddBook)         // Menambahkan buku baru
+		bookRoutes.PUT("/:id", bookController.UpdateBook)    // Memperbarui buku berdasarkan ID
+		bookRoutes.DELETE("/:id", bookController.DeleteBook) // Menghapus buku berdasarkan ID
 	}
 }

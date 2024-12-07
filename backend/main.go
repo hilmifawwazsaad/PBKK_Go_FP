@@ -2,6 +2,9 @@ package main
 
 import (
 	"backend/config"
+	"backend/controllers"
+	"backend/routes"
+
 	// "fmt"
 	// "backend/routes"
 	"backend/database"
@@ -30,6 +33,12 @@ func main() {
 	// routes.BookRoutes(server, bookController)
 	// routes.CategoryRoutes(server, categoryController)
 	// routes.TransactionRoutes(server, transactionController)
+
+	// Inisialisasi BookController dengan menghubungkannya ke database
+	bookController := &controllers.BookController{DB: db}
+
+	// Memanggil BookRoutes untuk menambahkan route /books
+	routes.BookRoutes(server, bookController)
 
 	if err := database.Migrate(db); err != nil {
 		log.Fatalf("Error migrating database: %v", err)
