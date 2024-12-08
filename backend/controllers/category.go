@@ -14,7 +14,7 @@ type CategoryController struct {
 // GetAllCategories: Mengambil semua kategori buku
 func (cc *CategoryController) GetAllCategories(c *gin.Context) {
 	var categories []models.Category
-	if err := cc.DB.Preload("Book").Find(&categories).Error; err != nil {
+	if err := cc.DB.Find(&categories).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching categories"})
 		return
 	}

@@ -93,7 +93,7 @@ export default function EditUser() {
                     <label className="block">Jenis Kelamin:</label>
                     <select
                         className="border px-3 py-2 w-full"
-                        value={jenisKelamin}
+                        value={jenisKelamin.toString()}
                         onChange={(e) => setJenisKelamin(e.target.value === "true")}
                         required
                     >
@@ -133,13 +133,15 @@ export default function EditUser() {
                 </div>
                 <div>
                     <label className="block">Tipe User:</label>
-                    <input
-                        type="text"
+                    <select
                         className="border px-3 py-2 w-full"
                         value={userType}
                         onChange={(e) => setUserType(e.target.value)}
                         required
-                    />
+                    >
+                        <option value="admin">Admin</option>
+                        <option value="user">User</option>
+                    </select>
                 </div>
                 <div>
                     <label className="block">Password:</label>
@@ -153,7 +155,7 @@ export default function EditUser() {
                 </div>
                 <button
                     type="submit"
-                    className="bg-[#FF5A5F] text-white px-4 py-2 rounded mt-4"
+                    className="bg-blue-500 text-white px-4 py-3 rounded mt-4"
                 >
                     Perbarui User
                 </button>
