@@ -30,18 +30,18 @@ func main() {
 
 	server := gin.Default()	
 	server.Use(middleware.CORSMiddleware())
-	// routes.UserRoutes(server, UserController)
-	// routes.BookRoutes(server, bookController)
-	// routes.CategoryRoutes(server, categoryController)
-	// routes.TransactionRoutes(server, transactionController)
 
 	// Inisialisasi BookController dengan menghubungkannya ke database
 	userController := &controllers.UserController{DB: db}
 	bookController := &controllers.BookController{DB: db}
+	categoryController := &controllers.CategoryController{DB: db}
+	transactionController := &controllers.TransactionController{DB: db}
 
 	// Memanggil BookRoutes untuk menambahkan route /books
 	routes.UserRoutes(server, userController)
 	routes.BookRoutes(server, bookController)
+	routes.CategoryRoutes(server, categoryController)
+	routes.TransactionRoutes(server, transactionController)
 
 	if err := database.Migrate(db); err != nil {
 		log.Fatalf("Error migrating database: %v", err)
