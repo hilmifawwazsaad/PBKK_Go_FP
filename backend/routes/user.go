@@ -12,7 +12,9 @@ func UserRoutes(router *gin.Engine, UserController *controllers.UserController) 
         userRoutes.POST("/register", UserController.Register)
         userRoutes.POST("/login", UserController.Login)
         userRoutes.GET("/users", UserController.GetAllUsers)
-        userRoutes.DELETE("/", UserController.DeleteUser)
-        userRoutes.PUT("/", UserController.UpdateUser)
+        userRoutes.POST("/add", UserController.CreateUser)
+        userRoutes.DELETE("/delete/:id", UserController.DeleteUser)
+        userRoutes.PUT("/edit/:id", UserController.UpdateUser)
+        userRoutes.GET("/user/:id", UserController.GetUserByID)
     }
 }

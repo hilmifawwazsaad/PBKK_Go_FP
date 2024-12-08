@@ -15,7 +15,7 @@ type BookController struct {
 
 func (controller *BookController) GetAllBooks(c *gin.Context) {
 	// Logika untuk mengambil semua buku
-	c.JSON(http.StatusOK, books) // Pastikan Anda mengembalikan respons yang sesuai
+	// c.JSON(http.StatusOK, books) // Pastikan Anda mengembalikan respons yang sesuai
 }
 
 // Helper untuk mengirim respon error
@@ -41,14 +41,14 @@ func validateBookInput(book *models.Book) string {
 }
 
 // GetAllBooks: Mengambil semua data buku
-func (bc *BookController) GetAllBooks(c *gin.Context) {
-	var books []models.Book
-	if err := bc.DB.Preload("Transaction").Find(&books).Error; err != nil {
-		sendErrorResponse(c, http.StatusInternalServerError, "Error fetching books")
-		return
-	}
-	c.JSON(http.StatusOK, books)
-}
+// func (bc *BookController) GetAllBooks(c *gin.Context) {
+// 	var books []models.Book
+// 	if err := bc.DB.Preload("Transaction").Find(&books).Error; err != nil {
+// 		sendErrorResponse(c, http.StatusInternalServerError, "Error fetching books")
+// 		return
+// 	}
+// 	c.JSON(http.StatusOK, books)
+// }
 
 // GetBookByID: Mengambil data buku berdasarkan ID
 func (bc *BookController) GetBookByID(c *gin.Context) {

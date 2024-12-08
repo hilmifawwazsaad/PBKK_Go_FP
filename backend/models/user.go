@@ -1,5 +1,9 @@
 package models
 
+import (
+	"gorm.io/gorm"
+)
+
 type User struct {
 	ID           uint          `gorm:"primaryKey" json:"id"`
 	Nama         string        `gorm:"type:varchar(255);not null" json:"nama"`
@@ -14,6 +18,25 @@ type User struct {
 	Timestamp
 }
 
-// func (User) BeforeCreate() string {
-// 	return "user"
-// }
+func GetUserByID(db *gorm.DB, id int) (User, error) {
+	var user User
+	if err := db.First(&user, id).Error; err != nil {
+		return user, err
+	}
+	return user, nil
+}
+
+func UpdateUser(db *gorm.DB, user User) error {
+	if err := db.Save(&user).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func DeleteUser(db *gorm.DB, id int) error {
+	if err := db.Delete(&User{}, id).Error; err != nil {
+		return err
+	}
+	return nil
+}
+

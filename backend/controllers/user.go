@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
+    "strconv"
 )
 
 type UserController struct{
@@ -56,9 +57,9 @@ func (uc *UserController) Login(c *gin.Context){
     }
 
     // Generate JWT token
-    token := generateJWT(user.ID)
+    // token := generateJWT(user.ID)
 
-    c.JSON(http.StatusOK, gin.H{"token": token})
+    // c.JSON(http.StatusOK, gin.H{"token": token})
 }
 
 // Get all users
@@ -71,35 +72,116 @@ func (uc *UserController) GetAllUsers(c *gin.Context) {
     c.JSON(http.StatusOK, users)
 }
 
-// Delete a user by ID
-func (uc *UserController) DeleteUser(c *gin.Context) {
-    id := c.Param("id")
-    if err := uc.DB.Delete(&models.User{}, id).Error; err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Error deleting user"})
-        return
-    }
+// GetUserByID: Mengambil user berdasarkan ID
+func (uc *UserController) GetUserByID(c *gin.Context) {
+	id := c.Param("id")
+	userID, err := strconv.Atoi(id) // Mengkonversi ID dari string ke integer
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid user ID format",
+		})
+		return
+	}
 
-    c.JSON(http.StatusNoContent, nil)
+	user, err := models.GetUserByID(uc.DB, userID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "User not found",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
 }
 
-// Update user
+// CreateUser: Menambahkan user baru
+func (uc *UserController) CreateUser(c *gin.Context) {
+	var user models.User
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+
+	// Simpan user baru ke database
+	if err := uc.DB.Create(&user).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error creating user"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, user)
+}
+
+// UpdateUser: Memperbarui data user
 func (uc *UserController) UpdateUser(c *gin.Context) {
-    id := c.Param("id")
-    var user models.User
-    if err := uc.DB.First(&user, id).Error; err != nil {
-        c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
-        return
-    }
+	id := c.Param("id")
+	userID, err := strconv.Atoi(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid user ID format",
+		})
+		return
+	}
 
-    if err := c.ShouldBindJSON(&user); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
-        return
-    }
+	var updatedUser models.User
+	if err := c.ShouldBindJSON(&updatedUser); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid data format",
+		})
+		return
+	}
 
-    if err := uc.DB.Save(&user).Error; err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating user"})
-        return
-    }
+	// Mencari user berdasarkan ID
+	user, err := models.GetUserByID(uc.DB, userID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "User not found",
+		})
+		return
+	}
 
-    c.JSON(http.StatusOK, user)
+	// Memperbarui data user
+	user.Nama = updatedUser.Nama
+	user.JenisKelamin = updatedUser.JenisKelamin
+	user.NomorTelepon = updatedUser.NomorTelepon
+	user.Email = updatedUser.Email
+	user.Alamat = updatedUser.Alamat
+	user.UserType = updatedUser.UserType
+	user.Password = updatedUser.Password
+
+	// Menyimpan perubahan ke database
+	if err := models.UpdateUser(uc.DB, user); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to update user",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "User updated successfully",
+		"user":    user,
+	})
+}
+
+// DeleteUser: Menghapus user berdasarkan ID
+func (uc *UserController) DeleteUser(c *gin.Context) {
+	id := c.Param("id")
+	userID, err := strconv.Atoi(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid user ID format",
+		})
+		return
+	}
+
+	// Menghapus user berdasarkan ID
+	if err := models.DeleteUser(uc.DB, userID); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "User not found",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "User deleted successfully",
+	})
 }
