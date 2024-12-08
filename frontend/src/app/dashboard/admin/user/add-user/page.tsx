@@ -109,13 +109,15 @@ export default function AddUser() {
                 </div>
                 <div>
                     <label className="block">Tipe User:</label>
-                    <input
-                        type="text"
+                    <select
                         className="border px-3 py-2 w-full"
                         value={userType}
                         onChange={(e) => setUserType(e.target.value)}
                         required
-                    />
+                    >
+                        <option value="admin">Admin</option>
+                        <option value="user">User</option>
+                    </select>
                 </div>
                 <div>
                     <label className="block">Password:</label>

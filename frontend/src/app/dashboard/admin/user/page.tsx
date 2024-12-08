@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useEffect, useState } from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
@@ -41,32 +41,37 @@ export default function User() {
 
     const handleEdit = (id: number) => {
         router.push(`/dashboard/admin/user/edit-user?id=${id}`);
-    }
+    };
 
-    // Fungsi untuk menghapus user
     const handleDelete = async (id: number) => {
-        try {
-            const response = await fetch(`http://localhost:8081/users/delete/${id}`, {
-                method: "DELETE",
-            });
-            if (response.ok) {
-                setUsers(users.filter((user) => user.id !== id));
-            } else {
-                console.error("Error deleting user:", response.statusText);
+        if (window.confirm("Apakah Anda yakin ingin menghapus pengguna ini?")) {
+            try {
+                const response = await fetch(`http://localhost:8081/users/delete/${id}`, {
+                    method: "DELETE",
+                });
+                if (response.ok) {
+                    setUsers(users.filter((user) => user.id !== id));
+                    alert("Pengguna berhasil dihapus");
+                } else {
+                    console.error("Error deleting user:", response.statusText);
+                    alert("Gagal menghapus pengguna");
+                }
+            } catch (error) {
+                console.error("Error deleting user:", error);
+                alert("Terjadi kesalahan saat menghapus pengguna");
             }
-        } catch (error) {
-            console.error("Error deleting user:", error);
         }
     };
-    
 
     return (
-        <div className="p-5 font-sans">
+        <div className="p-5">
             <h2 className="text-2xl font-semibold mb-4">Halaman Pengguna</h2>
             <p>Halaman untuk melihat daftar pengguna, menambahkan, mengedit, dan menghapus pengguna.</p>
-            <button className="mt-4 mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            onClick={handleAdd}>
-                Add User
+            <button
+                className="mt-4 mb-4 px-4 py-3 bg-blue-500 text-white rounded hover:bg-blue-600"
+                onClick={handleAdd}
+            >
+                Tambah User
             </button>
             <table className="min-w-full border-collapse border border-gray-200">
                 <thead>
@@ -81,7 +86,6 @@ export default function User() {
                         <th className="border border-gray-200 px-4 py-3 font-medium">Aksi</th>
                     </tr>
                 </thead>
-
                 <tbody>
                     {users.length === 0 ? (
                         <tr>
@@ -100,9 +104,10 @@ export default function User() {
                                 <td className="border border-gray-300 px-4 py-2">{user.nomor_telepon}</td>
                                 <td className="border border-gray-300 px-4 py-2">{user.email}</td>
                                 <td className="border border-gray-300 px-4 py-2">{user.alamat}</td>
-                                <td className="border border-gray-300 px-4 py-2">{user.user_type}</td>
+                                <td className="border border-gray-300 px-4 py-2">
+                                    {user.user_type === "admin" ? "Admin" : "User"}
+                                </td>
                                 <td className="border border-gray-300 px-4 py-2 flex space-x-2">
-
                                     <button
                                         className="text-yellow-500 hover:text-yellow-600"
                                         onClick={() => handleEdit(user.id)}
