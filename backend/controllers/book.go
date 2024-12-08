@@ -13,11 +13,6 @@ type BookController struct {
 	DB *gorm.DB
 }
 
-func (controller *BookController) GetAllBooks(c *gin.Context) {
-	// Logika untuk mengambil semua buku
-	c.JSON(http.StatusOK, books) // Pastikan Anda mengembalikan respons yang sesuai
-}
-
 // Helper untuk mengirim respon error
 func sendErrorResponse(c *gin.Context, statusCode int, message string) {
 	c.JSON(statusCode, gin.H{"error": message})
@@ -39,6 +34,11 @@ func validateBookInput(book *models.Book) string {
 	}
 	return ""
 }
+
+/*func (controller *BookController) GetAllBooks(c *gin.Context) {
+	// Logika untuk mengambil semua buku
+	c.JSON(http.StatusOK, books) // Pastikan Anda mengembalikan respons yang sesuai
+} */
 
 // GetAllBooks: Mengambil semua data buku
 func (bc *BookController) GetAllBooks(c *gin.Context) {

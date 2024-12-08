@@ -58,10 +58,16 @@ func seedDataFromFile(db *gorm.DB, filePath string, model interface{}, tableName
 		return err
 	}
 
-	if err := db.CreateInBatches(model, 100).Error; err != nil {
-		log.Printf("Error inserting data into table %s: %v", tableName, err)
+	// Use Save for insert or update (upsert)
+	if err := db.Save(model).Error; err != nil {
+		log.Printf("Error inserting or updating data into table %s: %v", tableName, err)
 		return err
 	}
+
+	/*if err := db.CreateInBatches(model, 100).Error; err != nil {
+		log.Printf("Error inserting data into table %s: %v", tableName, err)
+		return err
+	}*/
 
 	log.Printf("%s seeding completed.", tableName)
 	return nil
