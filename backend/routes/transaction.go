@@ -10,9 +10,9 @@ func TransactionRoutes(router *gin.Engine, TransactionController *controllers.Tr
 	transactionRoutes := router.Group("/transactions")
 	{
 		transactionRoutes.GET("/transactions", TransactionController.GetAllTransactions)
-		transactionRoutes.GET("/transactions/:id", TransactionController.GetTransactionByID)
-		transactionRoutes.POST("/transactions", TransactionController.AddTransaction)
-		transactionRoutes.PUT("/transactions/:id", TransactionController.UpdateTransaction)
-		transactionRoutes.DELETE("/transactions/:id", TransactionController.DeleteTransaction)
+		transactionRoutes.GET("/transaction/:id", TransactionController.GetTransactionByID)
+		transactionRoutes.POST("/add", TransactionController.AddTransaction)
+		transactionRoutes.PUT("/edit/:id", TransactionController.UpdateTransaction)
+		transactionRoutes.DELETE("/delete/:id", TransactionController.DeleteTransaction)
 	}
 }

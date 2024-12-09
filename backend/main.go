@@ -46,7 +46,7 @@ func main() {
 	// Apply AuthMiddleware on routes that need authentication
 	protected := server.Group("/protected")
 	protected.Use(middleware.AuthMiddleware()) // Apply AuthMiddleware globally to this group
-
+  
 	if err := database.Migrate(db); err != nil {
 		log.Fatalf("Error migrating database: %v", err)
 		panic(err)
