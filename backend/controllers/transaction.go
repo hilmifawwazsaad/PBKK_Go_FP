@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 	"net/http"
 	"time"
+	"fmt"
 )
 
 type TransactionController struct {
@@ -18,7 +19,12 @@ func (tc *TransactionController) GetAllTransactions(c *gin.Context) {
 	if err := tc.DB.Preload("Book").Preload("User").Find(&transactions).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching transactions"})
 		return
+	}	
+
+	for _, transaction := range transactions {
+		fmt.Println(transaction.Book)  // Debug log
 	}
+
 	c.JSON(http.StatusOK, transactions)
 }
 

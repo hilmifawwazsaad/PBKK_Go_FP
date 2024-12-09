@@ -38,10 +38,14 @@ func main() {
 	// Inisialisasi BookController dengan menghubungkannya ke database
 	userController := &controllers.UserController{DB: db}
 	bookController := &controllers.BookController{DB: db}
+	transactionController := &controllers.TransactionController{DB: db}
+	categoryController := &controllers.CategoryController{DB: db}
 
 	// Memanggil BookRoutes untuk menambahkan route /books
 	routes.UserRoutes(server, userController)
 	routes.BookRoutes(server, bookController)
+	routes.TransactionRoutes(server, transactionController)
+	routes.CategoryRoutes(server, categoryController)
 
 	if err := database.Migrate(db); err != nil {
 		log.Fatalf("Error migrating database: %v", err)
