@@ -17,8 +17,12 @@ type Transaction struct {
 	Book           Book      `gorm:"foreignKey:BookID" json:"book"`
 	User           User      `gorm:"foreignKey:UserID" json:"user"`
 
+	User User `gorm:"foreignKey:UserID" json:"user"`
+    Book Book `gorm:"foreignKey:BookID" json:"book"`
+
 	Timestamp
 }
+
 
 func (t *Transaction) MarshalJSON() ([]byte, error) {
 	type Alias Transaction

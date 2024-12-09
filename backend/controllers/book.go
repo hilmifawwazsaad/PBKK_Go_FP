@@ -4,7 +4,6 @@ import (
 	"backend/models"
 	"net/http"
 	"log"
-
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -46,7 +45,6 @@ func (bc *BookController) AddBook(c *gin.Context) {
 	}
 
 	log.Printf("Received book data: %+v", book)
-
 	// Menambahkan buku baru
 	if err := bc.DB.Create(&book).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error creating book"})

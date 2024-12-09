@@ -1,25 +1,28 @@
 package controllers
 
 import (
-	"net/http"
+	"backend/config"
 	"backend/models"
+	"net/http"
+
 	"gorm.io/gorm"
+
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
-    "strconv"
 )
 
-type UserController struct{
+type UserController struct {
 	DB *gorm.DB
 }
 
-func (uc *UserController) Register(c *gin.Context){
+func (uc *UserController) Register(c *gin.Context) {
 	var user models.User
-    if err := c.ShouldBindJSON(&user); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
-        return
-    }
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
 	// Hash password before saving
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -37,39 +40,43 @@ func (uc *UserController) Register(c *gin.Context){
 	c.JSON(http.StatusCreated, gin.H{"message": "User registered successfully"})
 }
 
-func (uc *UserController) Login(c *gin.Context){
+func (uc *UserController) Login(c *gin.Context) {
 	var input models.User
-    if err := c.ShouldBindJSON(&input); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
-        return
-    }
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
 
-    var user models.User
-    if err := uc.DB.Where("email = ?", input.Email).First(&user).Error; err != nil {
-        c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
-        return
-    }
+	var user models.User
+	if err := uc.DB.Where("email = ?", input.Email).First(&user).Error; err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		return
+	}
 
-    // Compare the hashed password
-    if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password)); err != nil {
-        c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
-        return
-    }
+	// Compare the hashed password
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password)); err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		return
+	}
 
-    // Generate JWT token
-    // token := generateJWT(user.ID)
+	// Generate JWT token
+	tokenString, err := config.GenerateJWT(user.ID, user.Email)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+		return
+	}
 
-    // c.JSON(http.StatusOK, gin.H{"token": token})
+	c.JSON(http.StatusOK, gin.H{"token": tokenString})
 }
 
 // Get all users
 func (uc *UserController) GetAllUsers(c *gin.Context) {
-    var users []models.User
-    if err := uc.DB.Find(&users).Error; err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching users"})
-        return
-    }
-    c.JSON(http.StatusOK, users)
+	var users []models.User
+	if err := uc.DB.Find(&users).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching users"})
+		return
+	}
+	c.JSON(http.StatusOK, users)
 }
 
 // GetUserByID: Mengambil user berdasarkan ID
