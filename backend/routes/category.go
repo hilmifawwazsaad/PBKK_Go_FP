@@ -10,9 +10,9 @@ func CategoryRoutes(router *gin.Engine, CategoryController *controllers.Category
 	categoryRoutes := router.Group("/categories")
 	{
 		categoryRoutes.GET("/categories", CategoryController.GetAllCategories)
-		categoryRoutes.GET("/categories/:id", CategoryController.GetCategoryByID)
-		categoryRoutes.POST("/categories", CategoryController.AddCategory)
-		categoryRoutes.PUT("/categories/:id", CategoryController.UpdateCategory)
-		categoryRoutes.DELETE("/categories/:id", CategoryController.DeleteCategory)
+		categoryRoutes.GET("/category/:id", CategoryController.GetCategoryByID)
+		categoryRoutes.POST("/add", CategoryController.AddCategory)
+		categoryRoutes.PUT("/edit/:id", CategoryController.UpdateCategory)
+		categoryRoutes.DELETE("/delete/:id", CategoryController.DeleteCategory)
 	}
 }
