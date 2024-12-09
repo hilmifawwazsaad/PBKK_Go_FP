@@ -22,8 +22,8 @@ func (cc *CategoryController) GetAllCategories(c *gin.Context) {
 }
 
 // GetCategoryByID: Mengambil kategori buku berdasarkan ID
-func (cc *CategoryController) GetCategoryByID(c *gin.Context) {
-	id := c.Param("id")
+func (cc *CategoryController) GetCategoryByID() {
+	// id := .Param("id")
 	var category models.Category
 	if err := cc.DB.Preload("Book").First(&category, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Category not found"})

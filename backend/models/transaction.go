@@ -2,9 +2,10 @@ package models
 
 import (
 	"time"
-	"gorm.io/gorm"
-)
 
+	"gorm.io/gorm"
+	"encoding/json"
+)
 
 type Transaction struct {
 	ID             uint      `gorm:"primaryKey" json:"id"`
@@ -12,11 +13,28 @@ type Transaction struct {
 	BookID         uint      `gorm:"not null;constraint:OnDelete:RESTRICT;OnUpdate:CASCADE;" json:"book_id"`
 	TanggalPinjam  time.Time `gorm:"type:date;not null" json:"tanggal_pinjam"`
 	TanggalKembali time.Time `gorm:"type:date;not null" json:"tanggal_kembali"`
+	Status         string    `gorm:"type:enum('Dipinjam','Dikembalikan');default:'Dipinjam'" json:"status"`
+	Book           Book      `gorm:"foreignKey:BookID" json:"book"`
+	User           User      `gorm:"foreignKey:UserID" json:"user"`
 
 	User User `gorm:"foreignKey:UserID" json:"user"`
     Book Book `gorm:"foreignKey:BookID" json:"book"`
 
 	Timestamp
+}
+
+
+func (t *Transaction) MarshalJSON() ([]byte, error) {
+	type Alias Transaction
+	return json.Marshal(&struct {
+		TanggalPinjam  string `json:"tanggal_pinjam"`
+		TanggalKembali string `json:"tanggal_kembali"`
+		*Alias
+	}{
+		TanggalPinjam:  t.TanggalPinjam.Format("2006-01-02"),
+		TanggalKembali: t.TanggalKembali.Format("2006-01-02"),
+		Alias:          (*Alias)(t),
+	})
 }
 
 func GetTransactionByID(db *gorm.DB, id int) (Transaction, error) {

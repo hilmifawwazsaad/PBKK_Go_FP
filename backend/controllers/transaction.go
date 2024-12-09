@@ -13,6 +13,14 @@ type TransactionController struct {
 	DB *gorm.DB
 }
 
+type AddTransactionRequest struct {
+    UserID         uint   `json:"user_id"`
+    BookID         uint   `json:"book_id"`
+    TanggalPinjam  string `json:"tanggal_pinjam"`   // String for incoming date
+    TanggalKembali string `json:"tanggal_kembali"`  // String for incoming date
+    Status         string `json:"status"`
+}
+
 // GetAllTransactions: Mengambil semua transaksi
 func (tc *TransactionController) GetAllTransactions(c *gin.Context) {
 	var transactions []models.Transaction
@@ -41,39 +49,60 @@ func (tc *TransactionController) GetTransactionByID(c *gin.Context) {
 
 // AddTransaction: Menambahkan transaksi peminjaman buku
 func (tc *TransactionController) AddTransaction(c *gin.Context) {
-	var transaction models.Transaction
-	if err := c.ShouldBindJSON(&transaction); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
-		return
-	}
+    var req AddTransactionRequest
+    if err := c.ShouldBindJSON(&req); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+        return
+    }
 
-	// Validasi jika stok buku cukup untuk dipinjam
-	var book models.Book
-	if err := tc.DB.First(&book, transaction.BookID).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Book not found"})
-		return
-	}
+    // Parse dates from string to time.Time
+    tanggalPinjam, err := time.Parse("2006-01-02", req.TanggalPinjam)
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid tanggal_pinjam format"})
+        return
+    }
 
-	if book.Stok <= 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Not enough stock available"})
-		return
-	}
+    tanggalKembali, err := time.Parse("2006-01-02", req.TanggalKembali)
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid tanggal_kembali format"})
+        return
+    }
 
-	// Mengurangi stok buku
-	book.Stok -= 1
-	if err := tc.DB.Save(&book).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating book stock"})
-		return
-	}
+    // Create a new transaction
+    transaction := models.Transaction{
+        UserID:         req.UserID,
+        BookID:         req.BookID,
+        TanggalPinjam:  tanggalPinjam,
+        TanggalKembali: tanggalKembali,
+        Status:         req.Status,
+    }
 
-	// Menambahkan transaksi
-	transaction.TanggalPinjam = time.Now()
-	if err := tc.DB.Create(&transaction).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error creating transaction"})
-		return
-	}
+    // Validate if the book exists and has enough stock
+    var book models.Book
+    if err := tc.DB.First(&book, transaction.BookID).Error; err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "Book not found"})
+        return
+    }
 
-	c.JSON(http.StatusCreated, transaction)
+    if book.Stok <= 0 {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Not enough stock available"})
+        return
+    }
+
+    // Decrease book stock
+    book.Stok -= 1
+    if err := tc.DB.Save(&book).Error; err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating book stock"})
+        return
+    }
+
+    // Save the transaction
+    if err := tc.DB.Create(&transaction).Error; err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Error creating transaction"})
+        return
+    }
+
+    c.JSON(http.StatusCreated, transaction)
 }
 
 // UpdateTransaction: Mengubah transaksi peminjaman buku
